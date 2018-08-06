@@ -1,0 +1,7 @@
+*.h5
+/AndrewNG/BasicDeepNN/__pycache__/*.pyc
+*.pyc
+/AndrewNG/FaceDetection/weights
+/AndrewNG/YOLO-Cardetection/images
+/AndrewNG/NeuralStyleTransfer/pretrained-model/imagenet-vgg-verydeep-19.mat
+*.mp4
