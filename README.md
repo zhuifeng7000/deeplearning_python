@@ -1,4 +1,4 @@
-﻿研究学习mathine learning、deep learning的程序
+研究学习mathine learning、deep learning的程序
 基于python语言
 
 mathine learning的算法实现如下：
@@ -22,9 +22,9 @@ deep learning算法实现包含如下
 6. ResNet 残差网络，识别手势
 7. keras 用keras实现卷积网络，识别笑脸
 8. YOLO-Cardetection 基于Yolo-v2算法的实现版本Yad2k，实现汽车等物品的自动检测
-9. FaceDetection 用Inception网络识别面部,分为face verification 和 face recognition
-10.DinosaurName 用基本RNN网络生成恐龙的名字
+9. FaceDetection 用Inception网络识别面部,分为face verification 和 face recognition两个部分
+10.DinosaurName 用基本RNN网络生成名称
 
 
-#感谢我的导师王黎明教授领我入门
-#感谢Andrew Yan-Tak Ng的机器学习和深度学习课程
+感谢我的导师王黎明教授领我入门  
+感谢Andrew Yan-Tak Ng的机器学习和深度学习课程
