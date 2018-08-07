@@ -1,8 +1,3 @@
-'''
-Created on Oct 19, 2010
-
-@author: Peter
-'''
 from numpy import *
 
 def loadDataSet():

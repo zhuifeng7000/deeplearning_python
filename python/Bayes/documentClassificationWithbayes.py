@@ -3,6 +3,8 @@
 Created on Thu Jun 21 21:54:58 2018
 
 @author: 赵智广
+
+用贝叶斯算法，来进行一段评论的情绪判断
 """
 
 import numpy as np

@@ -3,6 +3,8 @@
 Created on Sat Jun  9 17:36:58 2018
 
 @author: 赵智广
+
+协同过滤算法实现
 """
 
 import numpy as np

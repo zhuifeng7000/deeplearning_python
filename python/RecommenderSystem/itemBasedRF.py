@@ -2,7 +2,8 @@
 '''
 Created on 2015-06-22
 
-@author: Lockvictor
+基于项亮所著的《[推荐系统实践]
+Item based
 '''
 import sys
 import random
@@ -13,25 +14,25 @@ from operator import itemgetter
 from collections import defaultdict
 
 random.seed(0)
- 
 
-class UserBasedCF(object):
-    ''' TopN recommendation - User Based Collaborative Filtering '''
+
+class ItemBasedCF(object):
+    ''' TopN recommendation - Item Based Collaborative Filtering '''
 
     def __init__(self):
         self.trainset = {}
         self.testset = {}
 
-        self.n_sim_user = 20
+        self.n_sim_movie = 20
         self.n_rec_movie = 10
 
-        self.user_sim_mat = {}
+        self.movie_sim_mat = {}
         self.movie_popular = {}
         self.movie_count = 0
 
-        print ('Similar user number = %d' % self.n_sim_user, file=sys.stderr)
-        print ('recommended movie number = %d' %
-               self.n_rec_movie, file=sys.stderr)
+        print('Similar movie number = %d' % self.n_sim_movie, file=sys.stderr)
+        print('Recommended movie number = %d' %
+              self.n_rec_movie, file=sys.stderr)
 
     @staticmethod
     def loadfile(filename):
@@ -65,82 +66,89 @@ class UserBasedCF(object):
         print ('train set = %s' % trainset_len, file=sys.stderr)
         print ('test set = %s' % testset_len, file=sys.stderr)
 
-    def calc_user_sim(self):
-        ''' calculate user similarity matrix '''
-        # build inverse table for item-users
-        # key=movieID, value=list of userIDs who have seen this movie
-        print ('building movie-users inverse table...', file=sys.stderr)
-        movie2users = dict()
+		'''
+		类似userCF，首先建立 users-items的倒排表
+
+        然后建立矩阵 C，c[i,j] = 同时喜欢物品i和j的用户，有多少
+
+        W = C/  math.sqrt(N[i] * N[j])
+		'''
+    def calc_movie_sim(self):
+        ''' calculate movie similarity matrix '''
+        print('counting movies number and popularity...', file=sys.stderr)
 
         for user, movies in self.trainset.items():
             for movie in movies:
-                # inverse table for item-users
-                if movie not in movie2users:
-                    movie2users[movie] = set()
-                movie2users[movie].add(user)
-                # count item popularity at the same time
+                # count item popularity
                 if movie not in self.movie_popular:
                     self.movie_popular[movie] = 0
                 self.movie_popular[movie] += 1
-        print ('build movie-users inverse table succ', file=sys.stderr)
 
-        # save the total movie number, which will be used in evaluation
-        self.movie_count = len(movie2users)
-        print ('total movie number = %d' % self.movie_count, file=sys.stderr)
+        print('count movies number and popularity succ', file=sys.stderr)
 
-        # count co-rated items between users
-        usersim_mat = self.user_sim_mat
-        print ('building user co-rated movies matrix...', file=sys.stderr)
+        # save the total number of movies
+        self.movie_count = len(self.movie_popular)
+        print('total movie number = %d' % self.movie_count, file=sys.stderr)
 
-        for movie, users in movie2users.items():
-            for u in users:
-                usersim_mat.setdefault(u, defaultdict(int))
-                for v in users:
-                    if u == v:
+        # count co-rated users between items
+        itemsim_mat = self.movie_sim_mat
+        print('building co-rated users matrix...', file=sys.stderr)
+
+        for user, movies in self.trainset.items():
+            for m1 in movies:
+                itemsim_mat.setdefault(m1, defaultdict(int))
+                for m2 in movies:
+                    if m1 == m2:
                         continue
-                    usersim_mat[u][v] += 1
-        print ('build user co-rated movies matrix succ', file=sys.stderr)
+                    itemsim_mat[m1][m2] += 1
+
+        print('build co-rated users matrix succ', file=sys.stderr)
 
         # calculate similarity matrix
-        print ('calculating user similarity matrix...', file=sys.stderr)
+        print('calculating movie similarity matrix...', file=sys.stderr)
         simfactor_count = 0
         PRINT_STEP = 2000000
 
-        for u, related_users in usersim_mat.items():
-            for v, count in related_users.items():
-                usersim_mat[u][v] = count / math.sqrt(
-                    len(self.trainset[u]) * len(self.trainset[v]))
+        for m1, related_movies in itemsim_mat.items():
+            for m2, count in related_movies.items():
+                itemsim_mat[m1][m2] = count / math.sqrt(
+                    self.movie_popular[m1] * self.movie_popular[m2])
                 simfactor_count += 1
                 if simfactor_count % PRINT_STEP == 0:
-                    print ('calculating user similarity factor(%d)' %
-                           simfactor_count, file=sys.stderr)
+                    print('calculating movie similarity factor(%d)' %
+                          simfactor_count, file=sys.stderr)
 
-        print ('calculate user similarity matrix(similarity factor) succ',
-               file=sys.stderr)
-        print ('Total similarity factor number = %d' %
-               simfactor_count, file=sys.stderr)
+        print('calculate movie similarity matrix(similarity factor) succ',
+              file=sys.stderr)
+        print('Total similarity factor number = %d' %
+              simfactor_count, file=sys.stderr)
 
+		'''
+		找到用户u，所有感兴趣的物品
+		根据每个物品，查找K个最相近的物品，这些物品过滤掉u已经喜欢的物品
+		然后再计算用户u，对推荐的每个物品的可能喜欢程度： = 逐个累计（u已经喜欢的每个物品 与 推荐物品的相似性）
+		倒排序，返回N个
+		'''
     def recommend(self, user):
-        ''' Find K similar users and recommend N movies. '''
-        K = self.n_sim_user
+        ''' Find K similar movies and recommend N movies. '''
+        K = self.n_sim_movie
         N = self.n_rec_movie
-        rank = dict()
+        rank = {}
         watched_movies = self.trainset[user]
 
-        for similar_user, similarity_factor in sorted(self.user_sim_mat[user].items(),
-                                                      key=itemgetter(1), reverse=True)[0:K]:
-            for movie in self.trainset[similar_user]:
-                if movie in watched_movies:
+        for movie, rating in watched_movies.items():
+            for related_movie, similarity_factor in sorted(self.movie_sim_mat[movie].items(),
+                                                           key=itemgetter(1), reverse=True)[:K]:
+                if related_movie in watched_movies:
                     continue
-                # predict the user's "interest" for each movie
-                rank.setdefault(movie, 0)
-                rank[movie] += similarity_factor
+                rank.setdefault(related_movie, 0)  #dict中不存在，就添加，初始值为0
+                rank[related_movie] += similarity_factor * rating
         # return the N best movies
-        return sorted(rank.items(), key=itemgetter(1), reverse=True)[0:N]
+        return sorted(rank.items(), key=itemgetter(1), reverse=True)[:N]
 
     def evaluate(self):
         ''' print evaluation result: precision, recall, coverage and popularity '''
-        print ('Evaluation start...', file=sys.stderr)
+        print('Evaluation start...', file=sys.stderr)
 
         N = self.n_rec_movie
         #  varables for precision and recall
@@ -175,8 +183,8 @@ class UserBasedCF(object):
 
 
 if __name__ == '__main__':
-    ratingfile = os.path.join('MovieLens-RecSys', 'ratings.dat')
-    usercf = UserBasedCF()
-    usercf.generate_dataset(ratingfile)
-    usercf.calc_user_sim()
-    usercf.evaluate()
+    ratingfile = os.path.join('ml-1m', 'ratings.dat')
+    itemcf = ItemBasedCF()
+    itemcf.generate_dataset(ratingfile)
+    itemcf.calc_movie_sim()
+    itemcf.evaluate()
