@@ -1,6 +1,17 @@
 ﻿研究学习mathine learning、deep learning的程序
 基于python语言
 
+mathine learning的算法实现如下：
+1. KNN用 K近邻算法识别手写数字
+2. DecisionTree 用python代码和scikit-learning分别实现决策树算法并预测示例
+3. Bayes 用python实现贝叶斯算法进行垃圾邮件判别，并用scikit-learning中的算法一段评论文本的情绪
+4. EM-AdaBoost 分别用python和scikit-learning实现AdaBoost算法，并根据特征判断马是否生病
+5. RecommenderSystem 推荐系统
+   userBasedRS.py  基于用户相似性的协同过滤算法
+   itemBasedRF.py  基于物品相似性的协同过滤算法
+		   （感谢Lockvictor、项亮）
+   RecommenderSystem.py  基于model的协同过滤算法
+
 deep learning算法实现包含如下
 
 1. LogisticRegression logistic网络
