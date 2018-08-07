@@ -23,7 +23,7 @@ deep learning算法实现包含如下
 7. keras 用keras实现卷积网络，识别笑脸
 8. YOLO-Cardetection 基于Yolo-v2算法的实现版本Yad2k，实现汽车等物品的自动检测
 9. FaceDetection 用Inception网络识别面部,分为face verification 和 face recognition两个部分
-10.DinosaurName 用基本RNN网络生成名称
+10. DinosaurName 用基本RNN网络生成名称
 
 
 感谢我的导师王黎明教授领我入门  
