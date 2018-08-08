@@ -66,7 +66,7 @@ def standEst(dataMat, user, simMeas, item):
 def svdEst(dataMat, user, simMeas, item):
     n = dataMat.shape[1]
     simTotal = 0.0; ratSimTotal = 0.0
-    U,Sigma,VT = np.linalg.svd(dataMat)
+    U,Sigma,VT = np.linalg.svd(dataMat)   #关键点在这个地方，奇异值分解
     Sig4 = np.matrix(np.eye(4)*Sigma[:4]) #arrange Sig4 into a diagonal matrix
     xformedItems = dataMat.T * U[:,:4] * Sig4.I  #create transformed items
     for j in range(n):

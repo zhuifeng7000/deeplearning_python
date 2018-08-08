@@ -66,6 +66,11 @@ class UserBasedCF(object):
         print ('train set = %s' % trainset_len, file=sys.stderr)
         print ('test set = %s' % testset_len, file=sys.stderr)
 
+		'''
+		计算所有用户之间的相似性，结果是相似矩阵
+		通过余弦公式直接算，计算量太大
+		于是，首先生成一个item-users矩阵，然后通过这个矩阵计算用户相似矩阵
+		'''
     def calc_user_sim(self):
         ''' calculate user similarity matrix '''
         # build inverse table for item-users
@@ -121,6 +126,12 @@ class UserBasedCF(object):
         print ('Total similarity factor number = %d' %
                simfactor_count, file=sys.stderr)
 
+		'''
+			前K个相近用户，找出他们喜欢的物品
+			跳出所有的，本用户没有互动的物品
+			逐个计算喜爱度：= 与邻近用户的相似度 * 邻近用户的打分（如果没有打分，就是1）
+			倒排序推荐前N个
+		'''
     def recommend(self, user):
         ''' Find K similar users and recommend N movies. '''
         K = self.n_sim_user
