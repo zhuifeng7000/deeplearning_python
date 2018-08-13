@@ -3,7 +3,7 @@
 
 一、mathine learning的算法实现如下：
 
-1. KNN用 K近邻算法识别手写数字
+1. KNN 用K近邻算法识别手写数字
 2. DecisionTree 用python代码和scikit-learning分别实现决策树算法并预测示例
 3. Bayes 用python实现贝叶斯算法进行垃圾邮件判别，并用scikit-learning中的算法一段评论文本的情绪
 4. EM-AdaBoost 分别用python和scikit-learning实现AdaBoost算法，并根据特征判断马是否生病
