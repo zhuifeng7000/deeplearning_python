@@ -203,4 +203,4 @@ yolo_outputs = yolo_head(yolo_model.output, anchors, len(class_names))
 
 scores, boxes, classes = yolo_eval(yolo_outputs, image_shape)
 
-out_scores, out_boxes, out_classes = predict(sess, "test.jpg")
+out_scores, out_boxes, out_classes = predict(sess, "0019.jpg")
